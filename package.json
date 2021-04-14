@@ -1,0 +1,46 @@
+{
+  "name": "xplora-api.js",
+  "version": "0.1.0",
+  "description": "An unofficial client library for the Xplora API.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MiGoller/xplora-api.js.git"
+  },
+  "keywords": [
+    "Xplora",
+    "Watch",
+    "Kids",
+    "API"
+  ],
+  "author": "MiGoller",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MiGoller/xplora-api.js/issues"
+  },
+  "homepage": "https://github.com/MiGoller/xplora-api.js#readme",
+  "dependencies": {
+    "crypto-js": "^4.0.0",
+    "gql": "^1.1.2",
+    "graphql": "^15.5.0",
+    "graphql-request": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.0.1",
+    "@types/node": "^14.14.37",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "eslint": "^7.24.0",
+    "tslint": "^6.1.3",
+    "typescript": "^4.2.4"
+  }
+}
