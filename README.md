@@ -12,7 +12,7 @@ An unofficial client library for the Xplora API.
 ## Install
 
 ```bash
-$ npm add life360-api.js
+$ npm add xplora-api.js
 ```
 
 ## Quickstart
