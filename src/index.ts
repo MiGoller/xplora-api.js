@@ -1,8 +1,18 @@
+/*
+ * xplora-api.js
+ *
+ * Author: MiGoller
+ * 
+ * Copyright (c) 2021 MiGoller
+ */
+
 import CryptoJS from "crypto-js";
 import { GraphQLClient } from "graphql-request";
 import { Variables } from "graphql-request/dist/types";
 
-//  GraphQL query definitions
+/**
+ * GraphQL query definitions
+ */
 const GQLQueries = {
     "MUTATION": {
         "tokenM": "mutation IssueToken($countryPhoneNumber: String!, $phoneNumber: String!, $password: String!, $userLang: String!, $timeZone: String!) {\n  issueToken(countryPhoneNumber: $countryPhoneNumber, phoneNumber: $phoneNumber, password: $password, userLang: $userLang, timeZone: $timeZone) {\n    __typename\n    id\n    token\n    issueDate\n    expireDate\n    user {\n      __typename\n      ...UserFragment\n    }\n    app {\n      __typename\n      ...AppFragment\n    }\n    valid\n    w360 {\n      __typename\n      token\n      secret\n      qid\n    }\n  }\n}\nfragment UserFragment on User {\n  __typename\n  id\n  userId\n  name\n  nickname\n  gender\n  birth\n  birthStr\n  weight\n  height\n  countryCode\n  emailAddress\n  countryPhoneCode\n  phoneNumber\n  mobilePhoneNumber\n  emailConfirm\n  status\n  file {\n    __typename\n    ...FileFragment\n  }\n  extra\n  xcoin\n  currentStep\n  totalStep\n  create\n  update\n  children {\n    __typename\n    id\n    guardian {\n      __typename\n      ...SimpleUserFragment\n    }\n    ward {\n      __typename\n      ...SimpleUserFragment\n    }\n  }\n}\nfragment FileFragment on File {\n  __typename\n  id\n  name\n}\nfragment SimpleUserFragment on User {\n  __typename\n  id\n  userId\n  name\n  nickname\n  gender\n  countryCode\n  countryPhoneCode\n  phoneNumber\n  mobilePhoneNumber\n  file {\n    __typename\n    ...FileFragment\n  }\n  xcoin\n  currentStep\n  totalStep\n  contacts {\n    __typename\n    ...ContactsFragment\n  }\n}\nfragment ContactsFragment on Contact {\n  __typename\n  id\n  me {\n    __typename\n    ...ContactorFragment\n  }\n  contacter {\n    __typename\n    ...ContactorFragment\n  }\n  phoneNumber\n  extra\n  listOrder\n  file {\n    __typename\n    ...FileFragment\n  }\n  create\n  update\n}\nfragment ContactorFragment on User {\n  __typename\n  id\n  userId\n  name\n  nickname\n  countryCode\n  countryPhoneCode\n  mobilePhoneNumber\n  phoneNumber\n}\nfragment AppFragment on App {\n  __typename\n  id\n  name\n  packageName\n  apiKey\n  apiSecret\n  terminalType\n  description\n  status\n  versions {\n    __typename\n    ...VersionFragment\n  }\n  create\n  update\n}\nfragment VersionFragment on AppVersion {\n  __typename\n  id\n  version\n  requireUpdate\n  downloadUrl\n  description\n  create\n  update\n}",
@@ -17,25 +27,40 @@ const GQLQueries = {
     }
 }
 
-//  Xplora endpoints
+/**
+ * Xplora endpoints
+ */
 const ENDPOINT = {
     "API": "https://api.myxplora.com/api"
 }
 
-//  API_KEY and API_SECRET taken from public GraphQL response
+/**
+ * Xplora API key
+ * 
+ * @remarks API_KEY taken from public GraphQL response
+ */
 const API_KEY = "c4156290289711eaa9f139f52846ef94";
+
+/**
+ * Xplora API secret
+ * 
+ * @remarks API_SECRET taken from public GraphQL response
+ */
 const API_SECRET = "025b4f60289811eaaa6fc5eb1eb94883";
 
 /**
  * Get the local system locale information.
- * @param {*} env 
- * @returns 
+ * @param {*} env A process environment object
+ * @returns Locale
  */
  function getEnvLocale(env?: NodeJS.ProcessEnv) {
     env = env || process.env;
     return env.LC_ALL || env.LC_MESSAGES || env.LANG || env.LANGUAGE || "en-US";
 }
 
+/**
+ * The GQLHandler hooks into the Xplora GraphQL API
+ */
 export class GQLHandler {
     private sessionId: string;
     private accessToken: string;
@@ -51,6 +76,14 @@ export class GQLHandler {
     private issueDate: number;
     private expireDate: number;
 
+    /**
+     * Creates a new Xplora GraphQL API Handler
+     * @param countryPhoneNumber The countrycode your phonenumber to log into the mobile app
+     * @param phoneNumber Your phonenumber w/o the countrycode to log into the mobile app
+     * @param password Password to log into the mobile app
+     * @param userLang The user's locale information (e.g. de-DE)
+     * @param timeZone The user's timezone (e.g. Europe/Berlin)
+     */
     constructor(countryPhoneNumber: string, phoneNumber: string, password: string, userLang: string, timeZone: string) {
         this.sessionId = "";
         this.accessToken = "";
@@ -76,6 +109,12 @@ export class GQLHandler {
         this.passwordMD5 = CryptoJS.MD5(password).toString();
     }
 
+    /**
+     * Get a Xplora API request header for an url
+     * @param url The request's target url
+     * @param acceptedContentType Accepted contenttype (e.g. application/json; charset=UTF-8)
+     * @returns Headers
+     */
     private getRequestHeaders(url: string, acceptedContentType: string): HeadersInit {
     
         // if (!client) throw new Error("XploraO2O Client MUST NOT be empty!");
@@ -110,11 +149,15 @@ export class GQLHandler {
         //  H-Tid header
         requestHeaders["H-Tid"] = Math.floor(Date.now() / 1000).toString();
     
-        // console.debug(JSON.stringify(requestHeaders));
-    
         return requestHeaders;
     }
 
+    /**
+     * Run a GraphQL query
+     * @param query The query to run
+     * @param variables Variables to interpolate
+     * @returns GraphQL query response
+     */
     async runGqlQuery<T>(query: string, variables?: Variables): Promise<T> {
         if (!query) throw new Error("GraphQL guery string MUST NOT be empty!");
     
@@ -129,6 +172,12 @@ export class GQLHandler {
         return data;
     }
 
+    /**
+     * Run a GraphQL query for an authorized user.
+     * @param query The query to run
+     * @param variables Variables to interpolate
+     * @returns GraphQL query response
+     */
     private async runAuthorizedGqlQuery<T>(query: string, variables?: Variables): Promise<T> {
         //  Check if logged in to the API
         if (!this.accessToken) throw new Error("You have to login to the Xplora API first.");
@@ -137,6 +186,10 @@ export class GQLHandler {
         return await this.runGqlQuery(query, variables);
     }
 
+    /**
+     * Login to the Xplora API
+     * @returns Auth-token
+     */
     async login<T>(): Promise<T> {
         //  Set GraphQL variables
         const variables = {
@@ -169,11 +222,15 @@ export class GQLHandler {
             if (data.issueToken.app.apiKey) this.API_KEY = data.issueToken.app.apiKey;
             if (data.issueToken.app.apiSecret) this.API_SECRET = data.issueToken.app.apiSecret;
         }
-        // console.log(JSON.stringify(data));
     
         return data.issueToken;
     }
 
+    /**
+     * Get a list of alarms for a watch
+     * @param wardId The id of a child (ward)
+     * @returns Alarms
+     */
     async getAlarms<T>(wardId: string): Promise<T> {
         return await this.runAuthorizedGqlQuery(
             GQLQueries.QUERY.alarmsQ,
@@ -182,6 +239,11 @@ export class GQLHandler {
             });
     }
 
+    /**
+     * Get the card groups
+     * @param isCampaign 
+     * @returns Card groups
+     */
     async getCardGroups<T>(isCampaign?: boolean): Promise<T> {
         return await this.runAuthorizedGqlQuery(
             GQLQueries.QUERY.cardGroupsQ,
@@ -190,6 +252,11 @@ export class GQLHandler {
             });
     }
 
+    /**
+     * Get a list of contacts for a watch
+     * @param wardId The id of a child (ward)
+     * @returns Contacts
+     */
     async getContacts<T>(wardId: string): Promise<T> {
         return await this.runAuthorizedGqlQuery(
             GQLQueries.QUERY.contactsQ,
@@ -198,12 +265,21 @@ export class GQLHandler {
             });
     }
 
+    /**
+     * Get "MyInfo" for the authorized user
+     * @returns 
+     */
     async getMyInfo<T>(): Promise<T> {
         return await this.runAuthorizedGqlQuery(
             GQLQueries.QUERY.readMyInfoQ,
             { });
     }
 
+    /**
+     * Get the last known location for watch w/o pinging the watch
+     * @param wardId The id of a child (ward)
+     * @returns Location information
+     */
     async getWatchLastLocation<T>(wardId: string): Promise<T> {
         return await this.runAuthorizedGqlQuery(
             GQLQueries.QUERY.watchLastLocateQ,
@@ -212,6 +288,11 @@ export class GQLHandler {
             });
     }
 
+    /**
+     * Get all watches
+     * @param wardId The id of a child (ward)
+     * @returns Watches
+     */
     async getWatches<T>(wardId: string): Promise<T> {
         return await this.runAuthorizedGqlQuery(
             GQLQueries.QUERY.watchesQ,
@@ -219,14 +300,4 @@ export class GQLHandler {
                 "uid": wardId
             });
     }
-}
-
-export async function login<T>(
-    countryPhoneNumber: string, 
-    phoneNumber: string, 
-    password: string, 
-    userLang: string, 
-    timeZone: string): Promise<T> {
-    const gqlHandler = new GQLHandler(countryPhoneNumber, phoneNumber, password, userLang, timeZone);
-    return await gqlHandler.login();
 }
