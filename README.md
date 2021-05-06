@@ -35,12 +35,18 @@ async function main() {
     console.dir(await gqlHandler.getMyInfo(), {depth: null, colors: true});
 
     //  Get the last location information for the first child in the array
-    console.log("---=== Letzte Ortung ===---");
+    console.log("---=== Last position data ===---");
     console.dir(await gqlHandler.getWatchLastLocation(issueToken.user.children[0].ward.id), {depth: null, colors: true});
 }
 
 main();
 ```
+
+## Additional examples
+
+Please hava a look at the additional examples for your interest:
+
+- [A simple ioBroker script to track children's position](./examples/iobroker/README.md)
 
 ## Changelog
 
