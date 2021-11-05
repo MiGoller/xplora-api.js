@@ -24,6 +24,8 @@ const GQLQueries = {
         "readMyInfoQ": "query ReadMyInfo {\n  readMyInfo {\n    __typename\n    ...UserFragment\n  }\n}\nfragment UserFragment on User {\n  __typename\n  id\n  userId\n  name\n  nickname\n  gender\n  birth\n  birthStr\n  weight\n  height\n  countryCode\n  emailAddress\n  countryPhoneCode\n  phoneNumber\n  mobilePhoneNumber\n  emailConfirm\n  status\n  file {\n    __typename\n    ...FileFragment\n  }\n  extra\n  xcoin\n  currentStep\n  totalStep\n  create\n  update\n  children {\n    __typename\n    id\n    guardian {\n      __typename\n      ...SimpleUserFragment\n    }\n    ward {\n      __typename\n      ...SimpleUserFragment\n    }\n  }\n}\nfragment FileFragment on File {\n  __typename\n  id\n  name\n}\nfragment SimpleUserFragment on User {\n  __typename\n  id\n  userId\n  name\n  nickname\n  gender\n  countryCode\n  countryPhoneCode\n  phoneNumber\n  mobilePhoneNumber\n  file {\n    __typename\n    ...FileFragment\n  }\n  xcoin\n  currentStep\n  totalStep\n  contacts {\n    __typename\n    ...ContactsFragment\n  }\n}\nfragment ContactsFragment on Contact {\n  __typename\n  id\n  me {\n    __typename\n    ...ContactorFragment\n  }\n  contacter {\n    __typename\n    ...ContactorFragment\n  }\n  phoneNumber\n  extra\n  listOrder\n  file {\n    __typename\n    ...FileFragment\n  }\n  create\n  update\n}\nfragment ContactorFragment on User {\n  __typename\n  id\n  userId\n  name\n  nickname\n  countryCode\n  countryPhoneCode\n  mobilePhoneNumber\n  phoneNumber\n}",
         "watchesQ": "query Watches($uid: String) {\n  watches(uid: $uid) {\n    __typename\n    ...WatchFragment\n  }\n}\nfragment WatchFragment on Watch {\n  __typename\n  id\n  group {\n    __typename\n    ...WatchGroupFragment\n  }\n  vendor {\n    __typename\n    ...VendorFragment\n  }\n  user {\n    __typename\n    ...UserFragment\n  }\n  name\n  os\n  osName\n  osVersion\n  brand\n  phoneNumber\n  qrCode\n  countryPhoneCode\n  onlineStatus\n  status\n  extra\n  create\n  update\n}\nfragment WatchGroupFragment on WatchGroup {\n  __typename\n  id\n  name\n  status\n  extra\n  description\n  create\n  update\n}\nfragment VendorFragment on Vendor {\n  __typename\n  id\n  name\n  status\n  extra\n  description\n  create\n  update\n}\nfragment UserFragment on User {\n  __typename\n  id\n  userId\n  name\n  nickname\n  gender\n  birth\n  birthStr\n  weight\n  height\n  countryCode\n  emailAddress\n  countryPhoneCode\n  phoneNumber\n  mobilePhoneNumber\n  emailConfirm\n  status\n  file {\n    __typename\n    ...FileFragment\n  }\n  extra\n  xcoin\n  currentStep\n  totalStep\n  create\n  update\n  children {\n    __typename\n    id\n    guardian {\n      __typename\n      ...SimpleUserFragment\n    }\n    ward {\n      __typename\n      ...SimpleUserFragment\n    }\n  }\n}\nfragment FileFragment on File {\n  __typename\n  id\n  name\n}\nfragment SimpleUserFragment on User {\n  __typename\n  id\n  userId\n  name\n  nickname\n  gender\n  countryCode\n  countryPhoneCode\n  phoneNumber\n  mobilePhoneNumber\n  file {\n    __typename\n    ...FileFragment\n  }\n  xcoin\n  currentStep\n  totalStep\n  contacts {\n    __typename\n    ...ContactsFragment\n  }\n}\nfragment ContactsFragment on Contact {\n  __typename\n  id\n  me {\n    __typename\n    ...ContactorFragment\n  }\n  contacter {\n    __typename\n    ...ContactorFragment\n  }\n  phoneNumber\n  extra\n  listOrder\n  file {\n    __typename\n    ...FileFragment\n  }\n  create\n  update\n}\nfragment ContactorFragment on User {\n  __typename\n  id\n  userId\n  name\n  nickname\n  countryCode\n  countryPhoneCode\n  mobilePhoneNumber\n  phoneNumber\n}",
         "watchLastLocateQ": "query WatchLastLocate($uid: String!) {\n  watchLastLocate(uid: $uid) {\n    __typename\n    ...WatchLastLocateFragment\n  }\n}\nfragment WatchLastLocateFragment on Location {\n  __typename\n  tm\n  lat\n  lng\n  rad\n  country\n  countryAbbr\n  province\n  city\n  addr\n  poi\n  battery\n  isCharging\n  isAdjusted\n  locateType\n  step\n  distance\n  isInSafeZone\n  safeZoneLabel\n}",
+        "askWatchLocateQ": "query AskWatchLocate($uid: String!) {\n  askWatchLocate(uid: $uid)\n}",
+        "trackWatchQ": "query TrackWatch($uid: String!) {\n  trackWatch(uid: $uid)\n}",
     }
 }
 
@@ -56,6 +58,32 @@ const API_SECRET = "025b4f60289811eaaa6fc5eb1eb94883";
  function getEnvLocale(env?: NodeJS.ProcessEnv) {
     env = env || process.env;
     return env.LC_ALL || env.LC_MESSAGES || env.LANG || env.LANGUAGE || "en-US";
+}
+
+/**
+ * Parses a GQL-query response
+ * @param res The GQL-query response
+ * @param resultObjName The name of the property to return the data
+ * @returns 
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function parseResponse(res: Record<string, unknown>, resultObjName: string): any {
+
+    //  Check if response is set.
+    if (!res) throw new Error("Query response must not be empty.");
+
+    //  Check if response has "errors" object.
+    // eslint-disable-next-line no-prototype-builtins
+    if (res.hasOwnProperty("errors")) throw new Error(JSON.stringify(res["errors"]));
+
+    //  Return the wanted result from the response
+    // eslint-disable-next-line no-prototype-builtins
+    if (res.hasOwnProperty(resultObjName)) {
+        return res[resultObjName];
+    }
+    else {
+        return {};
+    }
 }
 
 /**
@@ -171,7 +199,7 @@ export class GQLHandler {
     
         return data;
     }
-
+    
     /**
      * Run a GraphQL query for an authorized user.
      * @param query The query to run
@@ -298,6 +326,32 @@ export class GQLHandler {
             GQLQueries.QUERY.watchesQ,
             { 
                 "uid": wardId
+            });
+    }
+
+    /**
+     * Locate a watch
+     * @param id The id of a watch
+     * @returns 
+     */
+    async askWatchLocate<T>(id: string): Promise<T> {
+        return await this.runAuthorizedGqlQuery(
+            GQLQueries.QUERY.askWatchLocateQ,
+            { 
+                "uid": id
+            });
+    }
+
+    /**
+     * Track a watch actively
+     * @param id The id of a watch
+     * @returns 
+     */
+    async trackWatch<T>(id: string): Promise<T> {
+        return await this.runAuthorizedGqlQuery(
+            GQLQueries.QUERY.trackWatchQ,
+            { 
+                "uid": id
             });
     }
 }

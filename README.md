@@ -31,11 +31,18 @@ async function main() {
     const issueToken = await gqlHandler.login();
     
     //  Get my information
-    console.log("---=== My Info ===---");
+    console.log("Get detailed information about the logged in account ...");
     console.dir(await gqlHandler.getMyInfo(), {depth: null, colors: true});
 
-    //  Get the last location information for the first child in the array
-    console.log("---=== Letzte Ortung ===---");
+    //  Let watch report its current location
+    console.log("Invoke watch reporting its current location ...");
+    console.dir(await gqlHandler.askWatchLocate(issueToken.user.children[0].ward.id), {depth: null, colors: true});
+
+    console.log("    ... waiting 5 sec. for the watch reporting its location to the Xplora Cloud service ...");
+    await Sleep(5000);
+
+    //  Get the last reported location
+    console.log("Report the watch's last location ...");
     console.dir(await gqlHandler.getWatchLastLocation(issueToken.user.children[0].ward.id), {depth: null, colors: true});
 }
 
@@ -43,6 +50,11 @@ main();
 ```
 
 ## Changelog
+
+0.1.1
+
+- (MiGoller) Added method to let the watch report its current position once.
+- (MiGoller) Added method to actively track the watch for 1 minute.
 
 0.1.0
 
