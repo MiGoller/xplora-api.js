@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MiGoller/xplora-api.js.git"
+    "url": "https://github.com/MiGoller/xplora-api.js.git"
   },
   "keywords": [
     "Xplora",
