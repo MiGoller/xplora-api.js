@@ -116,7 +116,7 @@ jobs:
 
             - name: Publish package to Github packages
               run: |
-                  npm config set //npm.pkg.github.com/:_authToken==${{ secrets.GITHUB_TOKEN }}
+                  npm config set //npm.pkg.github.com/:_authToken==${{ secrets.NPM_GITHUB_TOKEN }}
                   npm whoami
                   npm publish
 
