@@ -43,11 +43,16 @@ async function main() {
 
     //  Get the last reported location
     console.log("Report the watch's last location ...");
-    console.dir(await gqlHandler.getWatchLastLocation(issueToken.user.children[0].ward.id), {depth: null, colors: true});
 }
 
 main();
 ```
+
+## Additional examples
+
+Please hava a look at the additional examples for your interest:
+
+- [A simple ioBroker script to track children's position](./examples/iobroker/README.md)
 
 ## Changelog
 
