@@ -21,7 +21,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Lint source code
         run: npm run lint
@@ -51,12 +51,19 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://npm.pkg.github.com'
+          # Defaults to the user or organization that owns the workflow file
+          # scope: '@'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
+
+      - name: Build project
+        run: npm build --if-present
 
       # Publish to GitHub Packages
       - name: Publish to GitHub Packages
-        run: npm publish
+        run: |
+          npm config set //npm.pkg.github.com/:_authToken ${NODE_AUTH_TOKEN}
+          npm publish --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
