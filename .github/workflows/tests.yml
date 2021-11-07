@@ -6,11 +6,11 @@ on:
   push:
     branches:
       - "*"
-      paths-ignore:
-        - ".github/**"
-        - "examples/**"
-        - "test/**"
-        - "*.md"
+    paths-ignore:
+      - ".github/**"
+      - "examples/**"
+      - "test/**"
+      - "*.md"
   pull_request:
     branches:
       - main
