@@ -180,9 +180,9 @@ class Xplora_helper {
         this.request = api.request.bind(this.api);
     }
 
-    async refresh() {
-        throw new Error("Not implemented!");
-    }
+    // async refresh() {
+    //     throw new Error("Not implemented!");
+    // }
 }
 
 class Xplora_List_helper extends Array {
@@ -205,15 +205,15 @@ class Xplora_List_helper extends Array {
         this.request = api.request.bind(this.api);
     }
 
-    async refresh() {
-        throw new Error("Not implemented!");
-    }
+    // async refresh() {
+    //     throw new Error("Not implemented!");
+    // }
 }
 
 /**
  * Xplora Location class
  */
-class Xplora_Location {
+export class Xplora_Location {
     timeStamp!: Date;
     lat!: number;
     lng!: number;
@@ -233,7 +233,7 @@ class Xplora_Location {
     isInSafeZone = false;
     safeZoneLabel = "";
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     constructor(data: any) {
         if (data.__typename == "Location") {
             if (data.tm === null) {
@@ -278,7 +278,7 @@ class Xplora_Location {
 /**
  * Xplora contact class
  */
-class Xplora_Contact {
+ export class Xplora_Contact {
     /**
      * The contact's unique identifier.
      */
@@ -346,7 +346,7 @@ class Xplora_Contact {
      */
     isApproved = false;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     constructor(xpContact: any) {
         this.id = xpContact.id;
         this.name = xpContact.name;
@@ -372,10 +372,10 @@ class Xplora_Contact {
 /**
  * 
  */
-class Xplora_ContactList extends Xplora_List_helper {
+ export class Xplora_ContactList extends Xplora_List_helper {
     private _parentUserId!: string;
     
-    async _populate() {
+    async _populate(): Promise<Xplora_ContactList> {
         if (this.length > 0) this.splice(0, this.length);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -392,23 +392,29 @@ class Xplora_ContactList extends Xplora_List_helper {
                 this.push(contact);
             }
         }
+
+        return this;
     }
 
-    async populate(userId: string) {
+    async populate(userId: string): Promise<Xplora_ContactList> {
         this._parentUserId = userId;
         
         await this._populate();
+
+        return this;
     }
 
-    async refresh() {
+    async refresh(): Promise<Xplora_ContactList> {
         await this._populate();
+
+        return this;
     }
 }
 
-class Xplora_ChildrenList extends Xplora_List_helper {
+export class Xplora_ChildrenList extends Xplora_List_helper {
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async populate(children: string | any[]) {
+    async populate(children: string | any[]): Promise<Xplora_ChildrenList> {
         if (this.length > 0) this.splice(0, this.length);
 
         if (children) {
@@ -419,10 +425,12 @@ class Xplora_ChildrenList extends Xplora_List_helper {
                 this.push(xpChild);
             }
         }
+
+        return this;
     }
 }
 
-class Xplora_Chat_Contact {
+export class Xplora_Chat_Contact {
     id = "";
     name = "";
     nickname = "";
@@ -430,8 +438,8 @@ class Xplora_Chat_Contact {
     phoneNumber = "";
     phoneNumberE123 = "";
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    constructor(data: any) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+    constructor(data: any){
         this.id = data.id;
         this.name = data.name;
         this.nickname = data.nickname;
@@ -443,7 +451,7 @@ class Xplora_Chat_Contact {
     }
 }
 
-class Xplora_Chat {
+export class Xplora_Chat {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     sender!: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -455,7 +463,7 @@ class Xplora_Chat {
     msgType = "";
     message: string | undefined = undefined;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     constructor(data: any) {
         
         this.timeStamp = new Date(data.create * 1000);
@@ -474,11 +482,11 @@ class Xplora_Chat {
     }
 }
 
-class Xplora_ChatList extends Array {
+export class Xplora_ChatList extends Array {
     offset = 0;
     limit = 0;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     constructor(data: any) {
         super();
         if (this.length > 0) this.splice(0, this.length);
@@ -496,7 +504,7 @@ class Xplora_ChatList extends Array {
     }
 }
 
-class Xplora_User extends Xplora_helper {
+export class Xplora_User extends Xplora_helper {
     id = "";
     userId = "";
     name = "";
@@ -516,7 +524,7 @@ class Xplora_User extends Xplora_helper {
     todayDistance = 0;
     _fetchContacts = true;
 
-    async _populateContacts() {
+    async _populateContacts(): Promise<Xplora_ContactList> {
         
         if (this.contacts === undefined) {
             this.contacts = new Xplora_ContactList(this.api);
@@ -529,7 +537,7 @@ class Xplora_User extends Xplora_helper {
         return this.contacts;
     }
 
-    async getLastLocation() {
+    async getLastLocation(): Promise<Xplora_Location> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const data: any = await this.request(
             GQLQueries.QUERY.watchLastLocateQ,
@@ -545,35 +553,28 @@ class Xplora_User extends Xplora_helper {
         }
         else {
             Object.assign(this.location, newLocation);
-        }
 
-        
-        if (this.location) {
-            //  Valid location information?
-            if (!this.location.timeStamp) {
-                this.location = undefined;
-            }
-            else {
-                //  Update steps and distance from location data.
-                this.todayStep = this.location.step;
-                this.todayDistance = this.location.distance;
-            }
+            //  Update steps and distance from location data.
+            this.todayStep = this.location.step;
+            this.todayDistance = this.location.distance;
         }
 
         return this.location;
     }
 
-    async _populate() {
+    async _populate(): Promise<Xplora_User> {
         //  Populate contacts
         await this._populateContacts();
 
         //  Update location
         await this.getLastLocation();
+
+        return this;
     }
 
     async populate(
         data: { id: string; user: string; name: string; nickname: string; gender: string; countryCode: string; countryPhoneCode: string; phoneNumber: string; mobilePhoneNumber: string; xcoin: number; currentStep: number; totalStep: number; },
-        fetchContacts?: boolean) {
+        fetchContacts?: boolean): Promise<Xplora_User> {
         this.id = data.id || "";
         this.userId = data.user || "";
         this.name = data.name || "";
@@ -593,10 +594,12 @@ class Xplora_User extends Xplora_helper {
 
         //  Populate data
         await this._populate();
+
+        return this;
     }
 
-    async refresh() {
-        await this._populate();
+    async refresh(): Promise<Xplora_User> {
+        return (await this._populate());
     }
 
     /**
@@ -605,7 +608,7 @@ class Xplora_User extends Xplora_helper {
      * 
      * This method asks the child's watch to report its current location.
      */
-    async locate() {
+    async locate(): Promise<boolean> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const data: any = await this.request(
             GQLQueries.QUERY.askWatchLocateQ,
@@ -621,7 +624,7 @@ class Xplora_User extends Xplora_helper {
      * Actively track a child.
      * @returns The amount of time in seconds the child will be tracked.
      */
-    async track() {
+    async track(): Promise<number> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const data: any = await this.request(
             GQLQueries.QUERY.trackWatchQ,
@@ -658,7 +661,7 @@ class Xplora_User extends Xplora_helper {
      * @param msgId Meaning unknown.
      * @returns List of chats
      */
-    async getChats(offset: number, limit:number, msgId?: string) {
+    async getChats(offset: number, limit:number, msgId?: string): Promise<Xplora_ChatList> {
         const variables = {
             "uid": this.id,
             "offset": offset,
@@ -678,12 +681,12 @@ class Xplora_User extends Xplora_helper {
     }
 }
 
-class Xplora_MyInfo extends Xplora_User {
+export class Xplora_MyInfo extends Xplora_User {
     lang = "";
     timeZone = "";
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async populate(myInfoData: any) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+    async populate(myInfoData: any): Promise<Xplora_MyInfo> {
         super.populate(myInfoData);
 
         // this.rawData = {};
@@ -691,13 +694,15 @@ class Xplora_MyInfo extends Xplora_User {
         
         this.lang = myInfoData.extra.lang || "";
         this.timeZone = myInfoData.extra.timeZone || "";
+
+        return this;
     }
 }
 
 /**
  * Xplora API client
  */
-class Xplora {
+export class Xplora {
     static _instance: Xplora;
 
     session: Xplora_Session | undefined = undefined;
@@ -707,7 +712,7 @@ class Xplora {
     maxRetries = 5;
 
     // eslint-disable-next-line no-shadow-restricted-names
-    static login(countryPhoneNumber: string, phoneNumber: string, password: string, userLocale: string, timeZone: string) {
+    static login(countryPhoneNumber: string, phoneNumber: string, password: string, userLocale: string, timeZone: string): Promise<Xplora> {
         if (this._instance === undefined) this._instance = new Xplora();
         return this._instance.login(countryPhoneNumber, phoneNumber, password, userLocale, timeZone);
     }
@@ -897,7 +902,7 @@ class Xplora {
         return data;
     }
 
-    async login(countryPhoneNumber: string, phoneNumber: string, password: string, userLocale: string, timeZone: string) {
+    async login(countryPhoneNumber: string, phoneNumber: string, password: string, userLocale: string, timeZone: string): Promise<Xplora> {
         //  Store Credentials (no password!)
         this.api_credentials = new CredentialHelper(
             countryPhoneNumber,
@@ -921,7 +926,7 @@ class Xplora {
         return this;
     }
 
-    logout() {
+    logout(): boolean {
         if (this.session) {
             this.session = undefined;
         }
@@ -929,7 +934,8 @@ class Xplora {
         return true;
     }
 
-    async _populateMyInfo() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async _populateMyInfo(): Promise<any> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const data: any = await this.request(GQLQueries.QUERY.readMyInfoQ, {});
         const newMyInfo = new Xplora_MyInfo(this);
@@ -949,28 +955,28 @@ class Xplora {
         return data.readMyInfo;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async _populateChildren(xpChildren: any) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+    async _populateChildren(xpChildren: any): Promise<Xplora_ChildrenList> {
 
         if (this.children === undefined) {
             this.children = new Xplora_ChildrenList(this);
         }
 
-        await this.children.populate(xpChildren);
+        return (await this.children.populate(xpChildren));
     }
 
-    async _populate() {
+    async _populate(): Promise<Xplora> {
         //  Populate user information ("me")
         const myInfo = await this._populateMyInfo();
 
         await this._populateChildren(myInfo.children);
+
+        return this;
     }
 
     //  Refresh data
-    async refresh() {
-        await this._populate();
-
-        return this;
+    async refresh(): Promise<Xplora> {
+        return (await this._populate());
     }
 }
 
@@ -978,7 +984,7 @@ class Xplora {
  * The GQLHandler hooks into the Xplora GraphQL API
  * @deprecated
  */
-class GQLHandler {
+export class GQLHandler {
     private sessionId: string;
     private accessToken: string;
     private accessTokenExpire: number;
@@ -1244,8 +1250,3 @@ class GQLHandler {
             });
     }
 }
-
-module.exports = {
-    GQLHandler,
-    Xplora
-};
