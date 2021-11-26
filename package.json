@@ -11,7 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "prepare": "npm run build",
-    "common-test": "node ./test/common-tests.js",
+    "manual-test": "node ./test/manualTest.js",
     "lint": "eslint . --ext .ts"
   },
   "repository": {
