@@ -3,8 +3,11 @@
  *
  * Author: MiGoller
  * 
- * Copyright (c) 2021 MiGoller
+ * Copyright (c) 2021-2023 MiGoller
  */
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-prototype-builtins */
 
 import CryptoJS from "crypto-js";
 import { GraphQLClient } from "graphql-request";
@@ -16,6 +19,7 @@ import { Variables } from "graphql-request/dist/types";
 const GQLQueries = {
     "MUTATION": {
         "tokenM": "mutation IssueToken($countryPhoneNumber: String!, $phoneNumber: String!, $password: String!, $userLang: String!, $timeZone: String!) {\n  issueToken(countryPhoneNumber: $countryPhoneNumber, phoneNumber: $phoneNumber, password: $password, userLang: $userLang, timeZone: $timeZone) {\n    __typename\n    id\n    token\n    issueDate\n    expireDate\n    user {\n      __typename\n      ...UserFragment\n    }\n    app {\n      __typename\n      ...AppFragment\n    }\n    valid\n    w360 {\n      __typename\n      token\n      secret\n      qid\n    }\n  }\n}\nfragment UserFragment on User {\n  __typename\n  id\n  userId\n  name\n  nickname\n  gender\n  birth\n  birthStr\n  weight\n  height\n  countryCode\n  emailAddress\n  countryPhoneCode\n  phoneNumber\n  mobilePhoneNumber\n  emailConfirm\n  status\n  file {\n    __typename\n    ...FileFragment\n  }\n  extra\n  xcoin\n  currentStep\n  totalStep\n  create\n  update\n  children {\n    __typename\n    id\n    guardian {\n      __typename\n      ...SimpleUserFragment\n    }\n    ward {\n      __typename\n      ...SimpleUserFragment\n    }\n  }\n}\nfragment FileFragment on File {\n  __typename\n  id\n  name\n}\nfragment SimpleUserFragment on User {\n  __typename\n  id\n  userId\n  name\n  nickname\n  gender\n  countryCode\n  countryPhoneCode\n  phoneNumber\n  mobilePhoneNumber\n  file {\n    __typename\n    ...FileFragment\n  }\n  xcoin\n  currentStep\n  totalStep\n  contacts {\n    __typename\n    ...ContactsFragment\n  }\n}\nfragment ContactsFragment on Contact {\n  __typename\n  id\n  me {\n    __typename\n    ...ContactorFragment\n  }\n  contacter {\n    __typename\n    ...ContactorFragment\n  }\n  phoneNumber\n  extra\n  listOrder\n  file {\n    __typename\n    ...FileFragment\n  }\n  create\n  update\n}\nfragment ContactorFragment on User {\n  __typename\n  id\n  userId\n  name\n  nickname\n  countryCode\n  countryPhoneCode\n  mobilePhoneNumber\n  phoneNumber\n}\nfragment AppFragment on App {\n  __typename\n  id\n  name\n  packageName\n  apiKey\n  apiSecret\n  terminalType\n  description\n  status\n  versions {\n    __typename\n    ...VersionFragment\n  }\n  create\n  update\n}\nfragment VersionFragment on AppVersion {\n  __typename\n  id\n  version\n  requireUpdate\n  downloadUrl\n  description\n  create\n  update\n}",
+        "signInWithEmailOrPhoneM": "mutation signInWithEmailOrPhone($countryPhoneNumber: String, $phoneNumber: String, $password: String!, $emailAddress: String, $client: ClientType!, $userLang: String!, $timeZone: String!) {\n  signInWithEmailOrPhone(countryPhoneNumber: $countryPhoneNumber, phoneNumber: $phoneNumber, password: $password, emailAddress: $emailAddress, client: $client, userLang: $userLang, timeZone: $timeZone) {\n    __typename\n    id\n    token\n    issueDate\n    expireDate\n    user {\n      __typename\n      id\n      userId\n      name\n      nickname\n      gender\n      birth\n      birthStr\n      weight\n      height\n      firstName\n      lastName\n      countryCode\n      city\n      address1\n      address2\n      zipCode\n      emailAddress\n      countryPhoneCode\n      phoneNumber\n      mobilePhoneNumber\n      faxNumber\n      emailConfirm\n      description\n      status\n      file {\n        __typename\n        id\n        name\n        origName\n        contentType\n        orig {\n          __typename\n          path\n          urlPath\n          urlPathS3\n          size\n          width\n          height\n        }\n        thumbnail {\n          __typename\n          path\n          urlPath\n          urlPathS3\n          size\n          width\n          height\n        }\n        description\n        ipaddress\n        extra\n        create\n        update\n      }\n      lastLoginDate\n      changePasswordDate\n      loginFailCount\n      extra\n      xcoin\n      currentStep\n      totalStep\n      create\n      update\n      roles {\n        __typename\n        id\n        name\n        type\n        defaultRole\n        description\n        status\n        menus {\n          __typename\n          id\n          menuId\n          name\n          status\n          url\n          system\n          listOrder\n          create\n          update\n        }\n        create\n        update\n      }\n      children {\n        __typename\n        id\n        guardian {\n          __typename\n          id\n          userId\n          name\n          nickname\n          gender\n          birth\n          birthStr\n          weight\n          height\n          firstName\n          lastName\n          countryCode\n          city\n          address1\n          address2\n          zipCode\n          emailAddress\n          countryPhoneCode\n          phoneNumber\n          mobilePhoneNumber\n          faxNumber\n          emailConfirm\n          description\n          status\n          file {\n            __typename\n            id\n            name\n            origName\n            contentType\n            description\n            ipaddress\n            extra\n            create\n            update\n          }\n          lastLoginDate\n          changePasswordDate\n          loginFailCount\n          extra\n          xcoin\n          currentStep\n          totalStep\n          create\n          update\n          roles {\n            __typename\n            id\n            name\n            type\n            defaultRole\n            description\n            status\n            create\n            update\n          }\n          children {\n            __typename\n            id\n            flag\n            approval\n            listOrder\n            create\n          }\n          contacts {\n            __typename\n            id\n            name\n            phoneNumber\n            extra\n            listOrder\n            create\n            update\n          }\n        }\n        ward {\n          __typename\n          id\n          userId\n          name\n          nickname\n          gender\n          birth\n          birthStr\n          weight\n          height\n          firstName\n          lastName\n          countryCode\n          city\n          address1\n          address2\n          zipCode\n          emailAddress\n          countryPhoneCode\n          phoneNumber\n          mobilePhoneNumber\n          faxNumber\n          emailConfirm\n          description\n          status\n          file {\n            __typename\n            id\n            name\n            origName\n            contentType\n            description\n            ipaddress\n            extra\n            create\n            update\n          }\n          lastLoginDate\n          changePasswordDate\n          loginFailCount\n          extra\n          xcoin\n          currentStep\n          totalStep\n          create\n          update\n          roles {\n            __typename\n            id\n            name\n            type\n            defaultRole\n            description\n            status\n            create\n            update\n          }\n          children {\n            __typename\n            id\n            flag\n            approval\n            listOrder\n            create\n          }\n          contacts {\n            __typename\n            id\n            name\n            phoneNumber\n            extra\n            listOrder\n            create\n            update\n          }\n        }\n        flag\n        approval\n        listOrder\n        create\n      }\n      contacts {\n        __typename\n        id\n        me {\n          __typename\n          id\n          userId\n          name\n          nickname\n          gender\n          birth\n          birthStr\n          weight\n          height\n          firstName\n          lastName\n          countryCode\n          city\n          address1\n          address2\n          zipCode\n          emailAddress\n          countryPhoneCode\n          phoneNumber\n          mobilePhoneNumber\n          faxNumber\n          emailConfirm\n          description\n          status\n          file {\n            __typename\n            id\n            name\n            origName\n            contentType\n            description\n            ipaddress\n            extra\n            create\n            update\n          }\n          lastLoginDate\n          changePasswordDate\n          loginFailCount\n          extra\n          xcoin\n          currentStep\n          totalStep\n          create\n          update\n          roles {\n            __typename\n            id\n            name\n            type\n            defaultRole\n            description\n            status\n            create\n            update\n          }\n          children {\n            __typename\n            id\n            flag\n            approval\n            listOrder\n            create\n          }\n          contacts {\n            __typename\n            id\n            name\n            phoneNumber\n            extra\n            listOrder\n            create\n            update\n          }\n        }\n        name\n        phoneNumber\n        contacter {\n          __typename\n          id\n          userId\n          name\n          nickname\n          gender\n          birth\n          birthStr\n          weight\n          height\n          firstName\n          lastName\n          countryCode\n          city\n          address1\n          address2\n          zipCode\n          emailAddress\n          countryPhoneCode\n          phoneNumber\n          mobilePhoneNumber\n          faxNumber\n          emailConfirm\n          description\n          status\n          file {\n            __typename\n            id\n            name\n            origName\n            contentType\n            description\n            ipaddress\n            extra\n            create\n            update\n          }\n          lastLoginDate\n          changePasswordDate\n          loginFailCount\n          extra\n          xcoin\n          currentStep\n          totalStep\n          create\n          update\n          roles {\n            __typename\n            id\n            name\n            type\n            defaultRole\n            description\n            status\n            create\n            update\n          }\n          children {\n            __typename\n            id\n            flag\n            approval\n            listOrder\n            create\n          }\n          contacts {\n            __typename\n            id\n            name\n            phoneNumber\n            extra\n            listOrder\n            create\n            update\n          }\n        }\n        extra\n        listOrder\n        file {\n          __typename\n          id\n          name\n          origName\n          contentType\n          description\n          ipaddress\n          extra\n          create\n          update\n        }\n        create\n        update\n      }\n    }\n    app {\n      __typename\n      id\n      name\n      packageName\n      apiKey\n      apiSecret\n      terminalType\n      description\n      status\n      file {\n        __typename\n        id\n        name\n        origName\n        contentType\n        description\n        ipaddress\n        extra\n        create\n        update\n      }\n      versions {\n        __typename\n        id\n        version\n        requireUpdate\n        downloadUrl\n        description\n        create\n        update\n      }\n      create\n      update\n    }\n    valid\n    w360 {\n      __typename\n      token\n      secret\n      qid\n    }\n  }\n}",
     },
     "QUERY": {
         "alarmsQ": "query Alarms($uid: String!) {\n  alarms(uid: $uid) {\n    __typename\n    ...WatchAlarmFragment\n  }\n}\nfragment WatchAlarmFragment on WatchAlarm {\n  __typename\n  id\n  vendorName\n  vendorId\n  watch {\n    __typename\n    ...WatchFragment\n  }\n  user {\n    __typename\n    ...UserFragment\n  }\n  name\n  start\n  end\n  weekRepeat\n  occurMin\n  description\n  extra\n  start\n  create\n  update\n  status\n}\nfragment WatchFragment on Watch {\n  __typename\n  id\n  group {\n    __typename\n    ...WatchGroupFragment\n  }\n  vendor {\n    __typename\n    ...VendorFragment\n  }\n  user {\n    __typename\n    ...UserFragment\n  }\n  name\n  os\n  osName\n  osVersion\n  brand\n  phoneNumber\n  qrCode\n  countryPhoneCode\n  onlineStatus\n  status\n  extra\n  create\n  update\n}\nfragment WatchGroupFragment on WatchGroup {\n  __typename\n  id\n  name\n  status\n  extra\n  description\n  create\n  update\n}\nfragment VendorFragment on Vendor {\n  __typename\n  id\n  name\n  status\n  extra\n  description\n  create\n  update\n}\nfragment UserFragment on User {\n  __typename\n  id\n  userId\n  name\n  nickname\n  gender\n  birth\n  birthStr\n  weight\n  height\n  countryCode\n  emailAddress\n  countryPhoneCode\n  phoneNumber\n  mobilePhoneNumber\n  emailConfirm\n  status\n  file {\n    __typename\n    ...FileFragment\n  }\n  extra\n  xcoin\n  currentStep\n  totalStep\n  create\n  update\n  children {\n    __typename\n    id\n    guardian {\n      __typename\n      ...SimpleUserFragment\n    }\n    ward {\n      __typename\n      ...SimpleUserFragment\n    }\n  }\n}\nfragment FileFragment on File {\n  __typename\n  id\n  name\n}\nfragment SimpleUserFragment on User {\n  __typename\n  id\n  userId\n  name\n  nickname\n  gender\n  countryCode\n  countryPhoneCode\n  phoneNumber\n  mobilePhoneNumber\n  file {\n    __typename\n    ...FileFragment\n  }\n  xcoin\n  currentStep\n  totalStep\n  contacts {\n    __typename\n    ...ContactsFragment\n  }\n}\nfragment ContactsFragment on Contact {\n  __typename\n  id\n  me {\n    __typename\n    ...ContactorFragment\n  }\n  contacter {\n    __typename\n    ...ContactorFragment\n  }\n  phoneNumber\n  extra\n  listOrder\n  file {\n    __typename\n    ...FileFragment\n  }\n  create\n  update\n}\nfragment ContactorFragment on User {\n  __typename\n  id\n  userId\n  name\n  nickname\n  countryCode\n  countryPhoneCode\n  mobilePhoneNumber\n  phoneNumber\n}",
@@ -41,14 +45,23 @@ const ENDPOINT = {
  * 
  * @remarks API_KEY taken from public GraphQL response
  */
-const API_KEY = "c4156290289711eaa9f139f52846ef94";
+const API_KEY = "fc45d50304511edbf67a12b93c413b6a";
 
 /**
  * Xplora API secret
  * 
  * @remarks API_SECRET taken from public GraphQL response
  */
-const API_SECRET = "025b4f60289811eaaa6fc5eb1eb94883";
+const API_SECRET = "1e9b6fe0327711ed959359c157878dcb";
+
+/**
+ * Xplora client type
+ */
+const CLIENT_TYPE = {
+    "WEB": "WEB",
+    "APP": "APP",
+    "UNKNOWN__": "UNKNOWN__",
+};
 
 /**
  * Get the local system locale information.
@@ -66,18 +79,15 @@ const API_SECRET = "025b4f60289811eaaa6fc5eb1eb94883";
  * @param resultObjName The name of the property to return the data
  * @returns 
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseResponse(res: Record<string, unknown>, resultObjName: string): any {
 
     //  Check if response is set.
     if (!res) throw new Error("Query response must not be empty.");
 
     //  Check if response has "errors" object.
-    // eslint-disable-next-line no-prototype-builtins
     if (res.hasOwnProperty("errors")) throw new Error(JSON.stringify(res["errors"]));
 
     //  Return the wanted result from the response
-    // eslint-disable-next-line no-prototype-builtins
     if (res.hasOwnProperty(resultObjName)) {
         return res[resultObjName];
     }
@@ -99,6 +109,7 @@ export class GQLHandler {
     private countryPhoneNumber: string;
     private phoneNumber: string;
     private passwordMD5: string;
+    private emailAddress: string;
     private API_KEY: string;
     private API_SECRET: string;
     private issueDate: number;
@@ -112,7 +123,7 @@ export class GQLHandler {
      * @param userLang The user's locale information (e.g. de-DE)
      * @param timeZone The user's timezone (e.g. Europe/Berlin)
      */
-    constructor(countryPhoneNumber: string, phoneNumber: string, password: string, userLang: string, timeZone: string) {
+    constructor(countryPhoneNumber: string, phoneNumber: string, password: string, userLang: string, timeZone: string, emailAddress: string) {
         this.sessionId = "";
         this.accessToken = "";
         this.accessTokenExpire = Date.now();
@@ -132,7 +143,8 @@ export class GQLHandler {
         this.phoneNumber = phoneNumber;
         this.userLocale = userLang || getEnvLocale(process.env).split(".")[0];
         this.timeZone = timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone;
-
+        this.emailAddress = emailAddress || "";
+        
         //  Calculate MD5 hash for password.
         this.passwordMD5 = CryptoJS.MD5(password).toString();
     }
@@ -225,33 +237,41 @@ export class GQLHandler {
             "phoneNumber": this.phoneNumber,
             "password": this.passwordMD5,
             "userLang": this.userLocale,
-            "timeZone": this.timeZone
+            "timeZone": this.timeZone,
+            "emailAddress": this.emailAddress,
+            "client": CLIENT_TYPE.APP,
         };
     
         //  Run GraphQL query and take care of the variables
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const data: any = await this.runGqlQuery(GQLQueries.MUTATION.tokenM, variables);
-    
-        if (data.issueToken) {
+        const data: any = await this.runGqlQuery(GQLQueries.MUTATION.signInWithEmailOrPhoneM, variables);
+        
+        if (!data.hasOwnProperty("errors")) {
             //  Login succeeded
-            this.sessionId = data.issueToken.id;
-            this.userId = data.issueToken.user.id;
-            this.accessToken = data.issueToken.token;
-            this.issueDate = data.issueToken.issueDate;
-            this.expireDate = data.issueToken.expireDate;
+            this.sessionId = data.signInWithEmailOrPhone.id;
+            this.accessToken = data.signInWithEmailOrPhone.token;
+            this.issueDate = data.signInWithEmailOrPhone.issueDate;
+            this.expireDate = data.signInWithEmailOrPhone.expireDate;
+            this.userId = data.signInWithEmailOrPhone.user.id;
+            // this.sessionId = data.issueToken.id;
+            // this.userId = data.issueToken.user.id;
+            // this.accessToken = data.issueToken.token;
+            // this.issueDate = data.issueToken.issueDate;
+            // this.expireDate = data.issueToken.expireDate;
         }
         else {
             // Login failed.
             throw new Error("Login to Xplora API failed.");
         }
     
-        if (data.issueToken.app) {
+        if (data.signInWithEmailOrPhone.app) {
             //  Update API_KEY and API_SECRET?
-            if (data.issueToken.app.apiKey) this.API_KEY = data.issueToken.app.apiKey;
-            if (data.issueToken.app.apiSecret) this.API_SECRET = data.issueToken.app.apiSecret;
+            if (data.signInWithEmailOrPhone.app.apiKey) this.API_KEY = data.signInWithEmailOrPhone.app.apiKey;
+            if (data.signInWithEmailOrPhone.app.apiSecret) this.API_SECRET = data.signInWithEmailOrPhone.app.apiSecret;
+            // if (data.issueToken.app.apiKey) this.API_KEY = data.issueToken.app.apiKey;
+            // if (data.issueToken.app.apiSecret) this.API_SECRET = data.issueToken.app.apiSecret;
         }
     
-        return data.issueToken;
+        return data.signInWithEmailOrPhone;
     }
 
     /**
