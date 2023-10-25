@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/MiGoller/xplora-api.js#readme",
   "dependencies": {
-    "crypto-js": "^4.0.0",
+    "crypto-js": "^4.2.0",
     "gql": "^1.1.2",
     "graphql": "^15.8.0",
     "graphql-request": "^3.7.0"
